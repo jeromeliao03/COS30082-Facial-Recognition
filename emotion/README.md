@@ -74,9 +74,8 @@ FER-2013 SOTA is ~75% test accuracy. This recipe typically lands at **65–70% t
 - `fear ↔ surprise` (eyes wide, mouth open in both)
 - `sad ↔ neutral` (subtle expressions, often ambiguous)
 
-## Comparison with ResNet18 (Sanija's model)
+Compare with ResNet18 model
 
-Once both models are trained, compare on the **same test set with the same metrics** (accuracy, macro-F1, per-class F1). Pick the winner for the live demo. If MobileNetV2 is within 1–2 points of ResNet18, prefer MobileNetV2 for inference latency.
 
 ## Future extensions (already factored in)
 
