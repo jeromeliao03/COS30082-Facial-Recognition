@@ -1,7 +1,6 @@
 # Emotion Detection Module — MobileNetV2 on FER-2013
 
-**Owner:** Hasindu | **Course:** COS30082 Applied Machine Learning
-**Counterpart model:** ResNet18 (Sanija) — same data pipeline, different backbone, so results are directly comparable.
+**Author:** Hasindu 
 
 ## What this module does
 
