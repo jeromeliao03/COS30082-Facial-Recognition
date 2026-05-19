@@ -1,0 +1,6 @@
+tensorflow[and-cuda]
+keras
+scikit-learn
+matplotlib
+numpy
+python-dotenv
