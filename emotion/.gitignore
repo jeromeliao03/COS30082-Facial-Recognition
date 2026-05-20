@@ -4,11 +4,10 @@ data/
 *.tar
 *.tar.gz
 
-# Trained weights are stored on Drive and shared manually
-*.pth
-*.pt
-*.onnx
-*.ckpt
+# Trained TensorFlow models live on Drive (large binaries)
+*.keras
+*.h5
+saved_model/
 
 # Notebook noise
 .ipynb_checkpoints/

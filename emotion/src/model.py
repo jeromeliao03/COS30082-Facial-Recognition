@@ -1,91 +1,57 @@
-"""MobileNetV2 with a 7-class classification head for FER-2013."""
+"""MobileNetV2 with a seven-class classification head.
+
+Built with the Keras Functional API. The base model is called with
+training=False so batch-normalisation layers stay in inference mode and
+their pretrained running statistics are preserved during fine-tuning.
+"""
 
 from __future__ import annotations
 
-import torch
-import torch.nn as nn
-from torchvision import models
-from torchvision.models import MobileNet_V2_Weights
+import tensorflow as tf
+from tensorflow.keras import layers
 
 from . import config as C
 
 
 def build_mobilenetv2(
+    img_size: int = C.IMG_SIZE,
     num_classes: int = C.NUM_CLASSES,
-    unfreeze_last_n: int = C.UNFREEZE_LAST_N_BLOCKS,
-    dropout: float = 0.3,
-    pretrained: bool = True,
-) -> nn.Module:
-    """Return a MobileNetV2 ready for fine-tuning on FER-2013.
+    dropout: float = C.DROPOUT,
+) -> tuple[tf.keras.Model, tf.keras.Model]:
+    """Return (full_model, base_model). base_model is exposed so the
+    training code can freeze and unfreeze its layers between phases."""
+    img_shape = (img_size, img_size, 3)
 
-    Strategy:
-      - Load ImageNet pretrained weights (allowed: project rules permit
-        transfer learning + partial fine-tuning).
-      - Freeze all backbone parameters.
-      - Unfreeze the last `unfreeze_last_n` inverted-residual blocks so the
-        higher-level features adapt to facial expressions.
-      - Replace the 1000-class classifier with a new 7-class head.
-    """
-    weights = MobileNet_V2_Weights.IMAGENET1K_V2 if pretrained else None
-    model = models.mobilenet_v2(weights=weights)
-
-    # Freeze everything first.
-    for p in model.parameters():
-        p.requires_grad = False
-
-    # `features` is an nn.Sequential of 19 modules. Unfreeze the tail.
-    n_blocks = len(model.features)
-    for i in range(n_blocks - unfreeze_last_n, n_blocks):
-        for p in model.features[i].parameters():
-            p.requires_grad = True
-
-    # Replace the classifier head. Original last layer is Linear(1280, 1000).
-    in_features = model.classifier[-1].in_features
-    model.classifier = nn.Sequential(
-        nn.Dropout(p=dropout),
-        nn.Linear(in_features, num_classes),
+    base_model = tf.keras.applications.MobileNetV2(
+        input_shape=img_shape,
+        include_top=False,
+        weights="imagenet",
     )
-    # New head must train.
-    for p in model.classifier.parameters():
-        p.requires_grad = True
+    base_model.trainable = False
 
-    return model
+    inputs = tf.keras.Input(shape=img_shape)
+    x = base_model(inputs, training=False)
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dropout(dropout)(x)
+    outputs = layers.Dense(num_classes, activation="softmax")(x)
 
-
-def parameter_groups(model: nn.Module, lr_head: float, lr_backbone: float):
-    """Two-LR optimiser groups: head trains faster than the unfrozen tail."""
-    head_params, backbone_params = [], []
-    for name, p in model.named_parameters():
-        if not p.requires_grad:
-            continue
-        if name.startswith("classifier"):
-            head_params.append(p)
-        else:
-            backbone_params.append(p)
-    return [
-        {"params": head_params, "lr": lr_head},
-        {"params": backbone_params, "lr": lr_backbone},
-    ]
+    model = tf.keras.Model(inputs, outputs, name="mobilenetv2_emotion")
+    return model, base_model
 
 
-def count_trainable(model: nn.Module) -> tuple[int, int]:
-    """(trainable, total) parameter counts - useful for the report."""
-    total = sum(p.numel() for p in model.parameters())
-    trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    return trainable, total
+def unfreeze_top_n(base_model: tf.keras.Model, n_layers: int) -> int:
+    """Unfreeze the last n layers of the base model in place. Returns the
+    index at which fine-tuning starts."""
+    base_model.trainable = True
+    total = len(base_model.layers)
+    fine_tune_at = max(0, total - n_layers)
+    for layer in base_model.layers[:fine_tune_at]:
+        layer.trainable = False
+    return fine_tune_at
 
 
-def save_checkpoint(model: nn.Module, path, extra: dict | None = None) -> None:
-    payload = {"state_dict": model.state_dict()}
-    if extra:
-        payload.update(extra)
-    torch.save(payload, str(path))
-
-
-def load_checkpoint(path, map_location="cpu") -> nn.Module:
-    """Rebuild architecture and load weights. Mirrors build_mobilenetv2 defaults."""
-    model = build_mobilenetv2(pretrained=False)
-    state = torch.load(str(path), map_location=map_location)
-    model.load_state_dict(state["state_dict"] if "state_dict" in state else state)
-    model.eval()
-    return model
+def count_trainable(model: tf.keras.Model) -> tuple[int, int]:
+    """Return (trainable, total) parameter counts."""
+    trainable = sum(tf.size(w).numpy() for w in model.trainable_weights)
+    total = sum(tf.size(w).numpy() for w in model.weights)
+    return int(trainable), int(total)

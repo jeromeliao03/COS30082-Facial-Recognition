@@ -1,12 +1,6 @@
-"""Inference wrapper. This is the ONLY public surface the UI teammate needs.
-
-Usage from the UI code:
-    from emotion.src.predict import EmotionPredictor
-    predictor = EmotionPredictor("path/to/mobilenetv2_best.pth")
-    result = predictor.predict(face_bgr)   # numpy HxWx3 BGR (OpenCV) or RGB PIL
-    # -> {"label": "happy", "confidence": 0.87,
-    #     "all_scores": {"angry": 0.01, ..., "surprise": 0.02}}
-"""
+"""Inference wrapper. The UI imports this class and calls predict per
+webcam frame. Handles both BGR arrays from OpenCV and RGB arrays from PIL
+or MediaPipe via a constructor flag."""
 
 from __future__ import annotations
 
@@ -14,60 +8,50 @@ from pathlib import Path
 from typing import Dict, Union
 
 import numpy as np
-import torch
+import tensorflow as tf
 from PIL import Image
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 from . import config as C
-from .data import inference_tf
-from .model import load_checkpoint
 
 
 ArrayLike = Union[np.ndarray, Image.Image]
 
 
 class EmotionPredictor:
-    """Stateful predictor. Build once, reuse for every webcam frame."""
+    """Stateful predictor. Build once, reuse for every frame."""
 
     def __init__(
         self,
         weights_path: Union[str, Path],
-        device: str | None = None,
         input_is_bgr: bool = True,
+        img_size: int = C.IMG_SIZE,
     ) -> None:
-        """
-        Args:
-            weights_path: path to a checkpoint saved by train.py.
-            device: "cuda", "cpu" or None (auto).
-            input_is_bgr: True if face crops come from OpenCV (default), False
-                if they come from PIL / Mediapipe (RGB).
-        """
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = load_checkpoint(weights_path, map_location=self.device)
-        self.model.to(self.device).eval()
-        self.transform = inference_tf()
+        self.model = tf.keras.models.load_model(str(weights_path))
         self.input_is_bgr = input_is_bgr
+        self.img_size = img_size
 
-    # ------------------------------------------------------------------ utils
-    def _to_pil(self, img: ArrayLike) -> Image.Image:
+    def _to_rgb_array(self, img: ArrayLike) -> np.ndarray:
         if isinstance(img, Image.Image):
-            return img.convert("RGB")
+            return np.asarray(img.convert("RGB"))
         if not isinstance(img, np.ndarray):
             raise TypeError(f"Expected np.ndarray or PIL.Image, got {type(img)}")
         if img.ndim == 2:
-            return Image.fromarray(img).convert("RGB")
+            return np.stack([img] * 3, axis=-1)
         if img.ndim == 3 and img.shape[2] == 3:
             if self.input_is_bgr:
-                img = img[:, :, ::-1]              # BGR -> RGB
-            return Image.fromarray(np.ascontiguousarray(img)).convert("RGB")
+                img = img[:, :, ::-1]
+            return np.ascontiguousarray(img)
         raise ValueError(f"Unsupported image shape: {img.shape}")
 
-    # ----------------------------------------------------------------- public
-    @torch.no_grad()
+    def _prep(self, img: ArrayLike) -> np.ndarray:
+        arr = self._to_rgb_array(img).astype(np.float32)
+        resized = tf.image.resize(arr, (self.img_size, self.img_size)).numpy()
+        return preprocess_input(resized)[None, ...]
+
     def predict(self, face_crop: ArrayLike) -> Dict:
-        """Predict emotion for a single cropped face."""
-        pil = self._to_pil(face_crop)
-        x = self.transform(pil).unsqueeze(0).to(self.device)
-        prob = torch.softmax(self.model(x), dim=1).squeeze(0).cpu().numpy()
+        x = self._prep(face_crop)
+        prob = self.model.predict(x, verbose=0)[0]
         idx = int(prob.argmax())
         return {
             "label": C.CLASSES[idx],
@@ -75,14 +59,12 @@ class EmotionPredictor:
             "all_scores": {cls: float(p) for cls, p in zip(C.CLASSES, prob)},
         }
 
-    @torch.no_grad()
     def predict_batch(self, face_crops: list[ArrayLike]) -> list[Dict]:
-        """Predict for a batch - useful if the UI buffers frames."""
+        """Batched inference for callers that buffer frames."""
         if not face_crops:
             return []
-        tensors = torch.stack([self.transform(self._to_pil(c)) for c in face_crops])
-        tensors = tensors.to(self.device)
-        probs = torch.softmax(self.model(tensors), dim=1).cpu().numpy()
+        batch = np.concatenate([self._prep(c) for c in face_crops], axis=0)
+        probs = self.model.predict(batch, verbose=0)
         out = []
         for prob in probs:
             idx = int(prob.argmax())
