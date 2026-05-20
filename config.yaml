@@ -1,0 +1,5 @@
+recognition:
+  img_size: [96, 96]
+
+models:
+  haar_cascade: models/haarcascade_frontalface_default.xml

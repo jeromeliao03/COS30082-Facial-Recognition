@@ -1,4 +1,5 @@
 /.venv
-/data/*
+/data/dataset
 11-785-fall-20-homework-2-part-2.zip
 /checkpoints/classification_epoch_*
+/src/__pycache__
