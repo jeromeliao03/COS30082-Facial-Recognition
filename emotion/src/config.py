@@ -14,8 +14,10 @@ REPORTS_DIR = DRIVE_ROOT / "reports"
 CLASSES = ["angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"]
 NUM_CLASSES = len(CLASSES)
 
-# MobileNetV2 was pretrained on 224x224 RGB images at the largest variant.
-IMG_SIZE = 224
+# Aligned with the integration pipeline at 128x128 to keep per-frame
+# latency tractable when face recognition, anti-spoofing, and emotion run
+# back-to-back. MobileNetV2 ships ImageNet weights for this exact size.
+IMG_SIZE = 128
 BATCH_SIZE = 64
 
 # Two-phase training: head only first, then unfreeze backbone tail.
