@@ -1,5 +1,9 @@
 recognition:
+  threshold: 0.6516  # Base EER threshold
   img_size: [96, 96]
+
+paths:
+  registry: registry.npz
 
 models:
   haar_cascade: models/haarcascade_frontalface_default.xml

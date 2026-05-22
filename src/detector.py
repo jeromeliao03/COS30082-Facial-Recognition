@@ -1,7 +1,7 @@
 """
-Facial Detector module
+Facial Detector module: find faces in a raw BGR frame using Haar Cascade,
+return cropped, preprocessed face regions ready for model input.
 """
-
 import cv2
 import numpy as np
 import keras
@@ -15,6 +15,8 @@ preprocess = keras.applications.mobilenet_v2.preprocess_input
 IMG_SIZE = tuple(config["recognition"]["img_size"])
 
 def detect_faces(frame):
+    """Detect faces in BGR frame, returns box and crop dicts"""
+    
     # current model (cascade) requires grey
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
