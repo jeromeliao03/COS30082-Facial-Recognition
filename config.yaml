@@ -1,9 +1,16 @@
 recognition:
-  threshold: 0.6516  # Base EER threshold
-  img_size: [96, 96]
+  threshold: 0.6516 # Base EER threshold
+  img_size: [128, 128]
 
 paths:
   registry: registry.npz
 
 models:
   haar_cascade: models/haarcascade_frontalface_default.xml
+  face_recognition_metric: models/metric_best.keras
+  face_recognition_supervised: models/classification_best.keras
+  anti_spoofing: models/antispoofing_best.keras
+  emotion: models/emotion_recognition_best.keras
+
+  emotions:
+    labels: [angry, disgust, fear, happy, neutral, sad, surprise]
