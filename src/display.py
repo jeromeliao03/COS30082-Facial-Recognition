@@ -42,4 +42,4 @@ def annotate_frame(frame, faces):
         if liveness is False:                                                          
             cv2.putText(frame, "SPOOF DETECTED", (x, y + h + 44), cv2.FONT_HERSHEY_SIMPLEX, 0.6, RED, 2)
 
-        return frame
+    return frame
