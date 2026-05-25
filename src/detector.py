@@ -11,7 +11,6 @@ with open("config.yaml") as f:
     config = yaml.safe_load(f)
 
 detector = cv2.CascadeClassifier(config['models']['haar_cascade'])
-preprocess = keras.applications.mobilenet_v2.preprocess_input
 IMG_SIZE = tuple(config["recognition"]["img_size"])
 
 def detect_faces(frame):
@@ -28,7 +27,6 @@ def detect_faces(frame):
         crop = frame[y:y+h, x:x+w]
         crop = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
         crop = cv2.resize(crop, IMG_SIZE).astype(np.float32)
-        crop = preprocess(crop)
-        faces.append({"box": (x,y,w,h), "crop": crop})
+        faces.append({"box": (x,y,w,h), "raw_crop": crop})
 
     return faces

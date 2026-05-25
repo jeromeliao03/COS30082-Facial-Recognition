@@ -6,7 +6,7 @@ import numpy as np
 import keras
 import yaml
 
-from registry import search
+from src.registry import search
 
 with open ("config.yaml", "r") as f:
     config = yaml.safe_load(f)
@@ -15,14 +15,18 @@ with open ("config.yaml", "r") as f:
 THRESHOLD = config["recognition"]["threshold"]
 EMOTION_LABELS = config["emotions"]["labels"]
 
-_base_model_metric = keras.models.load_model(config["model"]["face_recognition_metric"])
+_active = config["recognition"]["active_model"]
+_base_model = keras.models.load_model(config["models"][f"face_recognition_{_active}"])
+
 _embedding_model = keras.Model(
-    inputs=_base_model_metric.input,
-    outputs=_base_model_metric.get_layer("embedding").output
+    inputs=_base_model.input,
+    outputs=_base_model.get_layer("embedding").output
 )
 
-_spoof_model = keras.models.load_model(config["model"]["anti_spoofing"])
-_emotion_model = keras.models.load_model(config["model"]["emotion"])
+_spoof_model = keras.models.load_model(config["models"]["anti_spoofing"])
+_emotion_model = keras.models.load_model(config["models"]["emotion"])
+
+_preprocess = keras.applications.mobilenet_v2.preprocess_input
 
 def run_inference(crop):
     """
@@ -34,7 +38,7 @@ def run_inference(crop):
     Example: If a face is determined to not be spoofed, 
         the track of that face going forward will not need subsequent detections
     """
-    batch = np.expand_dums(crop, axis=0)
+    batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
 
     # 1. Entry is face recognition to establish known identity
     embedding = _embedding_model.predict(batch, verbose=0)[0]
@@ -45,7 +49,7 @@ def run_inference(crop):
     
     # 2. anti-spoofing, run if identity is matched
     spoof_score = _spoof_model.predict(batch, verbose=0)[0]
-    liveness = bool(spoof_score > 0.5)
+    liveness = bool(spoof_score[0] > 0.5)
 
     # 3. emotion, run if identity is matched
     emotion_prob = _emotion_model.predict(batch, verbose=0)[0]
