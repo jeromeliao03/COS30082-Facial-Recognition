@@ -17,6 +17,7 @@ from src.display import annotate_frame
 with open("config.yaml") as f:
     config = yaml.safe_load(f)
 
+
 class Pipeline:
     """
     Webcam capture and inference loop, on background thread
@@ -27,6 +28,8 @@ class Pipeline:
         self._queue = queue.Queue(maxsize=max_queue)
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._run, daemon=True)
+        self._frame_count = 0
+        self._last_results = []
 
     def start(self):
         """Start background capture thread"""
@@ -37,9 +40,18 @@ class Pipeline:
         self._stop_event.set()
 
     def get_frame(self):
-        """Return the latest JPEG bytes"""
+        """Return the latest JPEG bytes, or None if nothing available."""
         try:
             return self._queue.get_nowait()
+        except queue.Empty:
+            return None
+
+    def peek_frame(self):
+        """Return latest JPEG bytes without consuming from queue."""
+        try:
+            jpeg = self._queue.get_nowait()
+            self._queue.put(jpeg)
+            return jpeg
         except queue.Empty:
             return None
         
@@ -47,38 +59,51 @@ class Pipeline:
         """Main loop - runs on background thread."""
         cap = cv2.VideoCapture(self._camera_index)
         try:
-          while not self._stop_event.is_set():
-              try:
-                  ret, frame = cap.read()
-                  if not ret or frame is None or frame.size == 0:
-                      continue
+            while not self._stop_event.is_set():
+                try:
+                    ret, frame = cap.read()
+                    if not ret or frame is None or frame.size == 0:
+                        continue
 
-                  faces = detect_faces(frame)
+                    self._frame_count += 1
+                    faces = detect_faces(frame)
 
-                  annotated_faces = []
-                  for face in faces:
-                      try:
-                          result = run_inference(face["raw_crop"])
-                      except Exception as e:
-                          print(f"inference error: {e}")
-                          continue
-                      annotated_faces.append({"box": face["box"], "result": result})
+                    # Run inference every 3rd frame, reuse cached results in between
+                    if faces and self._frame_count % 3 == 0:
+                        annotated_faces = []
+                        for face in faces:
+                            try:
+                                result = run_inference(face["raw_crop"])
+                            except Exception as e:
+                                print(f"inference error: {e}")
+                                continue
+                            annotated_faces.append({"box": face["box"], "result": result})
+                        self._last_results = annotated_faces
 
-                  rendered = annotate_frame(frame, annotated_faces)
+                    elif faces:
+                        # Reuse last inference results, update box positions only
+                        self._last_results = [
+                            {"box": faces[i]["box"], "result": self._last_results[i]["result"]}
+                            for i in range(min(len(faces), len(self._last_results)))
+                        ]
 
-                  _, jpeg = cv2.imencode(".jpg", rendered)
+                    else:
+                        # No faces detected — clear cached results
+                        self._last_results = []
 
-                  if self._queue.full():
-                      try:
-                          self._queue.get_nowait()
-                      except queue.Empty:
-                          pass
+                    rendered = annotate_frame(frame, self._last_results)
+                    _, jpeg = cv2.imencode(".jpg", rendered)
 
-                  self._queue.put(jpeg.tobytes())
+                    if self._queue.full():
+                        try:
+                            self._queue.get_nowait()
+                        except queue.Empty:
+                            pass
 
-              except Exception as e:
-                  # Log but never kill the thread
-                  print(f"pipeline loop error: {e}")
-                  continue
+                    self._queue.put(jpeg.tobytes())
+
+                except Exception as e:
+                    print(f"pipeline loop error: {e}")
+                    continue
         finally:
             cap.release()

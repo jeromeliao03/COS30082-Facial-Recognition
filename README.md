@@ -1,8 +1,15 @@
 # COS30082-Facial-Recognition
-Group project
 
-Sprint 1
+## Requirements
+1. git lfs
+2. pip install requirements
 
-Each group member will work on section 2 of the assignment and will collectively decide on the best iteration of the base model by April 30th.
 
-You need git lfs
+## Running application
+```
+.venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000
+```
+
+and then navigate to
+
+http://localhost:8000/

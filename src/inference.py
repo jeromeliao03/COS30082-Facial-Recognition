@@ -5,6 +5,7 @@ Inference module: runs the model pipeline on detected face.
 import numpy as np
 import keras
 import yaml
+import tensorflow as tf
 
 from src.registry import search
 
@@ -28,6 +29,25 @@ _emotion_model = keras.models.load_model(config["models"]["emotion"])
 
 _preprocess = keras.applications.mobilenet_v2.preprocess_input
 
+# Trace once, skip Python overhead on subsequent calls
+@tf.function
+def _run_embedding(batch):
+    return _embedding_model(batch, training=False)
+
+@tf.function
+def _run_spoof(batch):
+    return _spoof_model(batch, training=False)
+
+@tf.function
+def _run_emotion(batch):
+    return _emotion_model(batch, training=False)
+
+# Warm up all three models so XLA compiles before first real frame
+_dummy = np.zeros((1, 128, 128, 3), dtype="float32")
+_run_embedding(_dummy)
+_run_spoof(_dummy)
+_run_emotion(_dummy)
+
 def run_inference(crop):
     """
     Run inference pipeline on single preprocessed face crop
@@ -41,18 +61,18 @@ def run_inference(crop):
     batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
 
     # 1. Entry is face recognition to establish known identity
-    embedding = _embedding_model.predict(batch, verbose=0)[0]
+    embedding = _run_embedding(batch).numpy()[0]
     match = search(embedding)
     
     if match is None:
         return{"identity": None}
     
     # 2. anti-spoofing, run if identity is matched
-    spoof_score = _spoof_model.predict(batch, verbose=0)[0]
+    spoof_score = _run_spoof(batch).numpy()[0]
     liveness = bool(spoof_score[0] > 0.5)
 
     # 3. emotion, run if identity is matched
-    emotion_prob = _emotion_model.predict(batch, verbose=0)[0]
+    emotion_prob = _run_emotion(batch).numpy()[0]
     emotion = EMOTION_LABELS[int(np.argmax(emotion_prob))]
 
     return {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Test</title>
+</head>
+<body>
+    <h2>Live Feed</h2>
+    <img src="http://localhost:8000/video" width="640" />
+
+    <h2>Register</h2>
+    <input id="name" type="text" placeholder="Enter name" />
+    <button onclick="register()">Register</button>
+    <p id="status"></p>
+
+    <script>
+        function register() {
+            const name = document.getElementById("name").value;
+            fetch("http://localhost:8000/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name })
+            })
+            .then(r => r.json())
+            .then(data => document.getElementById("status").textContent = JSON.stringify(data))
+            .catch(err => document.getElementById("status").textContent = "Error: " + err);
+        }
+    </script>
+</body>
+</html>

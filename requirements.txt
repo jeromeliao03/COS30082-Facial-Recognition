@@ -4,6 +4,8 @@ matplotlib
 numpy
 python-dotenv
 pyyaml
+fastapi
+uvicorn
 
 # Apple Silicon
 tensorflow; platform_system == "Darwin" and platform_machine == "arm64"
