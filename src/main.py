@@ -14,8 +14,8 @@ import time
 
 import src.registry as registry
 from src.pipeline import Pipeline
-from src.inference import _embedding_model, _preprocess
-from src.detector import detect_faces
+import tensorflow as tf
+from src.inference import _preprocess, _run_embedding
 
 with open("config.yaml") as f:
     config = yaml.safe_load(f)
@@ -68,28 +68,20 @@ def register_face(req: RegisterRequest):
     if not req.name.strip():
         raise HTTPException(status_code=422, detail="Name cannot be empty")
 
-    jpeg = None
-    for _ in range(10):
-        jpeg = pipeline.peek_frame()
-        if jpeg:
+    crop = None
+    for _ in range(20):
+        crop = pipeline.get_crop()
+        if crop is not None:
             break
         time.sleep(0.1)
 
-    if jpeg is None:
-        raise HTTPException(status_code=500, detail="No frame available from pipeline")
+    if crop is None:
+        raise HTTPException(status_code=400, detail="No face detected — look at the camera")
 
-    frame = cv2.imdecode(np.frombuffer(jpeg, np.uint8), cv2.IMREAD_COLOR)
-    faces = detect_faces(frame)
-    if not faces:
-        raise HTTPException(status_code=400, detail="No face detected — try again")
-
-    crop = faces[0]["raw_crop"]
     batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
-    embedding = _embedding_model.predict(batch, verbose=0)[0]
-
+    embedding = _run_embedding(tf.constant(batch)).numpy()[0]
     registry.register(req.name.strip(), embedding)
     return {"registered": req.name.strip()}
-
 
 @app.get("/identities")
 def list_identities():

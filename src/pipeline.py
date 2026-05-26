@@ -45,6 +45,12 @@ class Pipeline:
             return self._queue.get_nowait()
         except queue.Empty:
             return None
+        
+    def get_crop(self):
+        """Return raw crop of first detected face, or None."""
+        if not self._last_results:
+            return None
+        return self._last_results[0].get("crop")
 
     def peek_frame(self):
         """Return latest JPEG bytes without consuming from queue."""
@@ -97,13 +103,13 @@ class Pipeline:
                             except Exception as e:
                                 print(f"inference error: {e}")
                                 continue
-                            annotated_faces.append({"box": face["box"], "result": result})
+                            annotated_faces.append({"box": face["box"], "result": result, "crop": face["raw_crop"]})
                         self._last_results = annotated_faces
 
                     elif faces:
-                        # Reuse last inference results, update box positions only
+                        # Reuse last inference results, update box n crop
                         self._last_results = [
-                            {"box": faces[i]["box"], "result": self._last_results[i]["result"]}
+                            {"box": faces[i]["box"], "result": self._last_results[i]["result"], "crop": faces[i]["raw_crop"]}
                             for i in range(min(len(faces), len(self._last_results)))
                         ]
 

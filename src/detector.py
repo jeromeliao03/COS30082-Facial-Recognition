@@ -19,7 +19,7 @@ def detect_faces(frame):
     # current model (cascade) requires grey
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    boxes = detector.detectMultiScale(gray, minSize=(60,60))
+    boxes = detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=6, minSize=(60, 60))
 
     faces = []
 
