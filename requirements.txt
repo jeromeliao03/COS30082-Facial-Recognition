@@ -1,0 +1,21 @@
+keras
+scikit-learn
+matplotlib
+numpy
+python-dotenv
+pyyaml
+fastapi
+uvicorn
+
+# Apple Silicon
+tensorflow; platform_system == "Darwin" and platform_machine == "arm64"
+tensorflow-metal; platform_system == "Darwin" and platform_machine == "arm64"
+
+# Intel Mac
+tensorflow; platform_system == "Darwin" and platform_machine != "arm64"
+
+# Linux CUDA
+tensorflow[and-cuda]; platform_system == "Linux"
+
+# Windows CPU
+tensorflow; platform_system == "Windows"

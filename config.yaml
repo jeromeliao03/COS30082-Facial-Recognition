@@ -1,0 +1,19 @@
+camera_index: 4 # Change to whatever index you use, mine is 4
+
+recognition:
+  threshold: 0.6516 # Base EER threshold
+  img_size: [128, 128]
+  active_model: metric  # either "metric" or "classification"
+
+paths:
+  registry: registry.npz
+
+models:
+  haar_cascade: models/haarcascade_frontalface_default.xml
+  face_recognition_metric: models/metric_best.keras
+  face_recognition_supervised: models/classification_best.keras
+  anti_spoofing: models/spoof_model.keras
+  emotion: models/emotion_detection.keras
+
+emotions:
+  labels: [angry, disgust, fear, happy, neutral, sad, surprise]
