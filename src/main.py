@@ -104,6 +104,10 @@ def delete_identity(name: str):
         raise HTTPException(status_code=404, detail=f"'{name}' not found")
     return {"deleted": name}
 
+@app.get("/status")
+def status():
+    return pipeline.status()
+
 @app.get("/")
 def index():
     """Serve test UI."""

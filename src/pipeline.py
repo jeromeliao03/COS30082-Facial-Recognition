@@ -55,6 +55,26 @@ class Pipeline:
         except queue.Empty:
             return None
         
+    def status(self):
+        """Return (as a flat object) status components for frontend panel"""
+        faces = self._last_results
+        if not faces:
+            return {"face_detected": False, "name": None, "emotion": None, "liveness": None}
+
+        first = faces[0]["result"]
+        liveness_str = None
+        if first.get("liveness") is True:
+            liveness_str = "Live"
+        elif first.get("liveness") is False:
+            liveness_str = "Spoof"
+
+        return {
+            "face_detected": True,
+            "name": first.get("identity") or "Unknown",
+            "emotion": first.get("emotion"),
+            "liveness": liveness_str,
+        }
+
     def _run(self):
         """Main loop - runs on background thread."""
         cap = cv2.VideoCapture(self._camera_index)

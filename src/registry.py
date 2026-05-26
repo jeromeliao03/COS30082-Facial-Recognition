@@ -70,4 +70,9 @@ def delete(name):
     return True
 
 
+def list_names():
+    """list names..."""
+    return list(names)
+
+
 load()
