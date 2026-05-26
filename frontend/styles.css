@@ -1,0 +1,256 @@
+/* ----- Reset / base ----- */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+    background: #0f1115;
+    color: #e6e8ed;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ----- Topbar ----- */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: #14171d;
+    border-bottom: 1px solid #20242c;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.logo-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #4cc9f0;
+    box-shadow: 0 0 12px #4cc9f0;
+}
+.brand-title { font-size: 16px; font-weight: 600; letter-spacing: 0.3px; }
+.clock {
+    font-family: 'Consolas', monospace;
+    color: #aab1bd;
+    font-size: 14px;
+}
+
+/* ----- Main grid ----- */
+.main-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* ----- Camera ----- */
+.camera-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.camera-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #20242c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.camera-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+}
+.camera-frame img.hidden { display: none; }
+.camera-overlay {
+    position: absolute;
+    top: 12px; left: 12px;
+    display: flex; gap: 8px;
+}
+.overlay-tag {
+    background: rgba(239, 68, 68, 0.85);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+.camera-fallback {
+    display: none;
+    text-align: center;
+    color: #aab1bd;
+    padding: 24px;
+}
+.camera-fallback.show { display: block; }
+.camera-fallback code {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #14171d;
+    border-radius: 6px;
+    color: #4cc9f0;
+    font-size: 12px;
+}
+
+/* ----- Side panels ----- */
+.side-panels { display: flex; flex-direction: column; gap: 16px; }
+
+.panel {
+    background: #1a1e26;
+    border: 1px solid #252a34;
+    border-radius: 12px;
+    padding: 16px;
+}
+.panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+}
+.panel-header h2 {
+    margin: 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #aab1bd;
+}
+.panel-pill {
+    background: #2a9d8f;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+
+/* Info panel */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #252a34;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { color: #8a92a0; font-size: 13px; }
+.info-value { color: #e6e8ed; font-weight: 600; font-size: 14px; }
+
+/* Registration */
+.field-label {
+    display: block;
+    font-size: 12px;
+    color: #aab1bd;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    background: #0f1115;
+    color: #e6e8ed;
+    border: 1px solid #252a34;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+input[type="text"]:focus { border-color: #4cc9f0; }
+
+.btn {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.05s, background 0.15s;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary {
+    background: #3a86ff;
+    color: white;
+}
+.btn-primary:hover:not(:disabled) { background: #2c6fe0; }
+.btn-danger {
+    background: transparent;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 4px 10px;
+    font-size: 12px;
+    margin: 0;
+    width: auto;
+}
+.btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
+
+.hint {
+    color: #6b7280;
+    font-size: 12px;
+    margin: 10px 0 0 0;
+}
+
+/* User list */
+.user-list { list-style: none; margin: 0; padding: 0; }
+.user-list li {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 4px;
+    border-bottom: 1px solid #252a34;
+    font-size: 14px;
+}
+.user-list li:last-child { border-bottom: none; }
+.user-list li.empty {
+    color: #6b7280; justify-content: center;
+    font-style: italic; font-size: 13px;
+}
+
+/* ----- Status bar ----- */
+.statusbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 8px 20px;
+    background: #0a0c10;
+    border-top: 1px solid #20242c;
+    font-size: 12px;
+    color: #aab1bd;
+    font-family: 'Consolas', monospace;
+}
+.status-item { display: flex; align-items: center; gap: 6px; }
+.status-item.right { margin-left: auto; color: #6b7280; }
+.dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block;
+}
+.dot-green { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.dot-red   { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+.dot-grey  { background: #4b5563; }
+
+/* ----- Toast ----- */
+.toast {
+    position: fixed;
+    top: 24px; left: 50%;
+    transform: translateX(-50%) translateY(-30px);
+    background: #3a86ff;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 1000;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+.toast.ok    { background: #2a9d8f; }
+.toast.warn  { background: #f59e0b; }
+.toast.error { background: #ef4444; }

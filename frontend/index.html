@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Attendance System</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="logo-dot"></span>
+            <span class="brand-title">Face Attendance System</span>
+        </div>
+        <div class="clock" id="clock">--:--:--</div>
+    </header>
+
+    <main class="main-grid">
+        <!-- Camera area -->
+        <section class="camera-area">
+            <div class="camera-frame">
+                <img id="videoStream" alt="Live video stream" />
+                <div class="camera-overlay">
+                    <div class="overlay-tag" id="modeTag">LIVE</div>
+                </div>
+                <div class="camera-fallback" id="camFallback">
+                    <p>Camera stream unavailable.</p>
+                    <p class="hint">Make sure the backend is running:</p>
+                    <code>uvicorn src.main:app --host 0.0.0.0 --port 8000</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Side panels -->
+        <aside class="side-panels">
+            <!-- Information panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Information</h2>
+                    <span class="panel-pill" id="statusPill">Active</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Name</span>
+                    <span class="info-value" id="infoName">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Emotion</span>
+                    <span class="info-value" id="infoEmotion">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Liveness</span>
+                    <span class="info-value" id="infoLiveness">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Last seen</span>
+                    <span class="info-value" id="infoTime">—</span>
+                </div>
+            </div>
+
+            <!-- Registration panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Registration</h2>
+                </div>
+                <label class="field-label" for="nameInput">Name</label>
+                <input id="nameInput" type="text" placeholder="e.g. Karun" autocomplete="off" />
+                <button id="registerBtn" class="btn btn-primary">Register current face</button>
+                <p class="hint">Look at the camera, type your name, then press Register.</p>
+            </div>
+
+            <!-- Registered users -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Registered users</h2>
+                    <span class="panel-pill" id="userCount">0</span>
+                </div>
+                <ul id="userList" class="user-list">
+                    <li class="empty">No users registered yet</li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Status bar -->
+    <footer class="statusbar">
+        <span class="status-item">
+            <span class="dot dot-grey" id="dotCam"></span> Camera
+        </span>
+        <span class="status-item">
+            <span class="dot dot-grey" id="dotFace"></span> Face detected
+        </span>
+        <span class="status-item">
+            <span class="dot dot-grey" id="dotBackend"></span> Backend
+        </span>
+        <span class="status-item">
+            FPS: <span id="fpsValue">—</span>
+        </span>
+        <span class="status-item right">
+            API: <span id="apiBase">—</span>
+        </span>
+    </footer>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
