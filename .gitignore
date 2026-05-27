@@ -4,3 +4,4 @@
 /checkpoints/classification_epoch_*
 /src/__pycache__
 .DS_Store
+/data

@@ -1,0 +1,6 @@
+timestamp,identity,liveness,emotion,action
+2026-05-27 14:25:22,aston,REAL,neutral,Access granted
+2026-05-27 14:25:31,jerome,REAL,neutral,Access granted
+2026-05-27 14:26:12,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-27 14:26:12,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-27 14:26:13,Unknown,SPOOF,neutral,ALERT — system locked 60s
