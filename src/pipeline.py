@@ -12,6 +12,7 @@ import yaml
 from src.detector import detect_faces
 from src.inference import run_inference
 from src.display import annotate_frame
+from src.inference import _liveness_cache
 
 
 with open("config.yaml") as f:
@@ -116,6 +117,7 @@ class Pipeline:
                     else:
                         # No faces detected — clear cached results
                         self._last_results = []
+                        _liveness_cache.clear()
 
                     rendered = annotate_frame(frame, self._last_results)
                     _, jpeg = cv2.imencode(".jpg", rendered)

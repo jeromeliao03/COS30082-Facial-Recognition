@@ -48,6 +48,8 @@ _run_embedding(_dummy)
 _run_spoof(_dummy)
 _run_emotion(_dummy)
 
+_liveness_cache = {}
+
 def run_inference(crop):
     """
     Run inference pipeline on single preprocessed face crop
@@ -67,9 +69,14 @@ def run_inference(crop):
     if match is None:
         return{"identity": None}
     
+    name = match["name"]
+
     # 2. anti-spoofing, run if identity is matched
-    spoof_score = _run_spoof(batch).numpy()[0]
-    liveness = bool(spoof_score[0] > 0.5)
+    if name not in _liveness_cache:
+        spoof_score = _run_spoof(batch).numpy()[0]
+        _liveness_cache[name] = bool(spoof_score[0] > 0.5)
+
+    liveness = _liveness_cache[name]
 
     # 3. emotion, run if identity is matched
     emotion_prob = _run_emotion(batch).numpy()[0]
