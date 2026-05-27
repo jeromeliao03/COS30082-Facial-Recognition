@@ -105,6 +105,15 @@ class Pipeline:
                                 print(f"inference error: {e}")
                                 continue
                             annotated_faces.append({"box": face["box"], "result": result, "crop": face["raw_crop"]})
+                        
+                        seen = set()
+                        for face in annotated_faces:
+                            identity = face["result"].get("identity")
+                            if identity and identity in seen:
+                                face["result"] = {**face["result"], "liveness": False}
+                            elif identity:
+                                seen.add(identity)
+
                         self._last_results = annotated_faces
 
                     elif faces:
