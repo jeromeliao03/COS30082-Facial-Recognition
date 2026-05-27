@@ -21,32 +21,34 @@ logger = EmotionLogger("emotion_log.csv")
 # INIT MODEL (IMPORTANT)
 # -----------------------------
 predictor = EmotionPredictor(
-    weights_path="../models/your_model.h5",  # change if needed
+    weights_path="emotion/models/mobilenetv2_best.keras",
     input_is_bgr=True
 )
+import cv2
 
-# -----------------------------
-# TEMP FAKE FACE (until webcam added)
-# -----------------------------
-def get_fake_face():
-    import numpy as np
-    return np.zeros((224, 224, 3), dtype=np.uint8)
+cap = cv2.VideoCapture(0)
 
 # -----------------------------
 # MAIN LOOP
 # -----------------------------
-emotions = ["happy", "sad", "neutral", "surprise"]
-
 while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
 
-    # TEMP: replace with real webcam later
-    face_crop = get_fake_face()
+    face_crop = cv2.resize(frame, (224, 224))
 
-    # REAL MODEL PREDICTION
     result = predictor.predict(face_crop)
     label = result["label"]
 
-    # LOG YOUR FEATURE
     logger.log(label)
 
-    time.sleep(1)
+    print("Logged:", label)
+
+    cv2.imshow("Emotion Detection", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
