@@ -1,13 +1,16 @@
 import sys
 import os
-
-sys.path.append(os.path.abspath(".."))
-
-from datetime import datetime
+import csv
 import time
+from datetime import datetime
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+
+sys.path.insert(0, PROJECT_ROOT)
 
 from logger import EmotionLogger
-from src.predict import EmotionPredictor
+from emotion.src.predict import EmotionPredictor
 
 # -----------------------------
 # INIT LOGGER

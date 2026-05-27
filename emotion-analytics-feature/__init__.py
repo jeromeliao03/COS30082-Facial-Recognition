@@ -1,0 +1,2 @@
+from emotion_analytics_feature.logger import EmotionLogger
+from emotion_analytics_feature.src.predict import EmotionPredictor

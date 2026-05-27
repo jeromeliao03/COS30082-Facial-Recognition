@@ -1,0 +1,21 @@
+# Datasets are never committed - too large, stored on Drive
+data/
+*.zip
+*.tar
+*.tar.gz
+
+# Trained TensorFlow models live on Drive (large binaries)
+*.keras
+*.h5
+saved_model/
+
+# Notebook noise
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Cached Kaggle credentials
+kaggle.json
+
+# Report artefacts that are regenerated each run
+reports/runs/

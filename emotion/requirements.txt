@@ -1,0 +1,11 @@
+# TensorFlow stack. Colab ships compatible versions of all of these; pinning
+# only the floor so local installs don't pick something ancient.
+tensorflow>=2.15
+numpy>=1.26
+pandas>=2.0
+matplotlib>=3.7
+seaborn>=0.13
+scikit-learn>=1.4
+Pillow>=10.0
+tqdm>=4.66
+kaggle>=1.6
