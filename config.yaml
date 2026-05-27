@@ -9,7 +9,7 @@ paths:
   registry: registry.npz
 
 models:
-  haar_cascade: models/haarcascade_frontalface_default.xml
+  yunet: models/yunet.onnx
   face_recognition_metric: models/metric_best.keras
   face_recognition_supervised: models/classification_best.keras
   anti_spoofing: models/spoof_model.keras

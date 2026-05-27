@@ -1,32 +1,41 @@
 """
-Facial Detector module: find faces in a raw BGR frame using Haar Cascade,
+Facial Detector module: find faces in a raw BGR frame using YuNet,
 return cropped, preprocessed face regions ready for model input.
 """
 import cv2
 import numpy as np
-import keras
 import yaml
 
 with open("config.yaml") as f:
     config = yaml.safe_load(f)
 
-detector = cv2.CascadeClassifier(config['models']['haar_cascade'])
+detector = cv2.FaceDetectorYN.create(
+    config["models"]["yunet"], "", (300, 300), score_threshold=0.6
+)
+
 IMG_SIZE = tuple(config["recognition"]["img_size"])
 
 def detect_faces(frame):
     """Detect faces in BGR frame, returns box and crop dicts"""
-    
-    # current model (cascade) requires grey
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Not size agnostic like haar cascade, explcitly call
+    h, w = frame.shape[:2]
+    detector.setInputSize((w,h))
+    _, faces = detector.detect(frame)
 
-    boxes = detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=6, minSize=(60, 60))
+    if faces is None:
+        return []
 
-    faces = []
-
-    for (x,y,w,h) in boxes:
-        crop = frame[y:y+h, x:x+w]
+    result = []
+    for face in faces:
+        # take first 4 from box coord, keypoints packed by YuNet
+        x,y,fw,fh = [int(v) for v in face[:4]]
+        # clamp
+        x,y = max(0, x), max(0, y)
+        crop = frame[y:y+fh, x:x+fw]
+        if crop.size == 0:
+            continue
         crop = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
         crop = cv2.resize(crop, IMG_SIZE).astype(np.float32)
-        faces.append({"box": (x,y,w,h), "raw_crop": crop})
+        result.append({"box": (x,y,fw,fh), "raw_crop": crop})
 
-    return faces
+    return result
