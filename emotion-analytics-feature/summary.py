@@ -1,21 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# load csv
-df = pd.read_csv("emotion_log.csv", header=None)
+def generate_report(file_path="emotion_log.csv"):
+    df = pd.read_csv(file_path, names=["time", "emotion"])
 
-df.columns = ["time", "emotion"]
+    counts = df["emotion"].value_counts()
 
-# count emotions
-counts = df["emotion"].value_counts()
+    counts.plot(kind="bar")
+    plt.title("Emotion Distribution")
+    plt.xlabel("Emotion")
+    plt.ylabel("Count")
 
-print(counts)
-
-# graph
-counts.plot(kind='bar')
-
-plt.xlabel("Emotion")
-plt.ylabel("Count")
-plt.title("Emotion Distribution")
-
-plt.show()
+    plt.show()
