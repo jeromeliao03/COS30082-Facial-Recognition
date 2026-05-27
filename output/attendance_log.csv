@@ -1,0 +1,15 @@
+timestamp,identity,liveness,emotion,action
+2026-05-27 11:08:31,jerome,REAL,angry,Access granted
+2026-05-27 11:08:40,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-27 11:08:41,Unknown,SPOOF,sad,Spoof detected (2/3)
+2026-05-27 11:08:42,Unknown,SPOOF,sad,ALERT — system locked 60s
+2026-05-27 11:09:46,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-27 11:09:46,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-27 11:09:47,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-27 11:12:56,jerome,REAL,angry,Access granted
+2026-05-27 11:13:01,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-27 11:13:02,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-27 11:13:03,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-27 11:14:04,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-27 11:14:05,Unknown,SPOOF,sad,Spoof detected (2/3)
+2026-05-27 11:14:07,Unknown,SPOOF,sad,ALERT — system locked 60s

@@ -8,6 +8,7 @@ import yaml
 import tensorflow as tf
 
 from src.registry import search
+from src import attendance_log
 
 with open ("config.yaml", "r") as f:
     config = yaml.safe_load(f)
@@ -67,6 +68,10 @@ def run_inference(crop):
     if match is None:
         return{"identity": None}
     
+    # ckecking system lockout status before running models
+    if attendance_log.is_locked():
+        return { "identity": None, "locked": True, "message": "System locked due to multiple spoofing attempts. Please wait." }
+    
     # 2. anti-spoofing, run if identity is matched
     spoof_score = _run_spoof(batch).numpy()[0]
     liveness = bool(spoof_score[0] > 0.5)
@@ -74,6 +79,9 @@ def run_inference(crop):
     # 3. emotion, run if identity is matched
     emotion_prob = _run_emotion(batch).numpy()[0]
     emotion = EMOTION_LABELS[int(np.argmax(emotion_prob))]
+
+     # innovative feature — log attendance 
+    attendance_log.process(match['name'], liveness, emotion)
 
     return {
         "identity": match['name'],

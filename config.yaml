@@ -1,4 +1,4 @@
-camera_index: 4 # Change to whatever index you use, mine is 4
+camera_index: 0 # Change to whatever index you use, mine is 4
 
 recognition:
   threshold: 0.6516 # Base EER threshold

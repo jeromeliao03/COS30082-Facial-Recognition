@@ -3,6 +3,7 @@ Display Module: draws inference results onto frame
 """
 
 import cv2
+from src import attendance_log
 
 # Colours
 GREEN = (0, 200, 0)
@@ -23,8 +24,12 @@ def annotate_frame(frame, faces):
         identity = result.get("identity")
         liveness = result.get("liveness")
         emotion = result.get ("emotion")
+        #checking is system is locked
+        locked = result.get("locked", False)
 
-        if identity is None:
+        if locked:
+            colour = (0,0,200)
+        elif identity is None:
             colour = YELLOW
         elif liveness:
             colour = GREEN
@@ -33,7 +38,17 @@ def annotate_frame(frame, faces):
 
         cv2.rectangle(frame, (x,y), (x+w, y+h), colour, 2)
 
-        label = identity if identity else "UNKNOWN"
+        if locked:
+            # get remaining lockout time from attendance_log
+            remaining = attendance_log.get_remaining_seconds()
+            label = f"SYSTEM LOCKED {remaining}s"
+        elif liveness is False:
+            label = "SPOOF DETECTED"
+        elif identity:
+            label = identity 
+        else:
+            label = "Unknown"
+
         cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, colour, 2)
 
         if emotion:
