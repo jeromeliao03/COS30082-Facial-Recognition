@@ -12,10 +12,10 @@ YELLOW = (0, 200, 220)
 WHITE = (255, 255, 255)
 
 
-def annotate_frame(frame, faces):
+def annotate_frame(frame, faces, greeting=None):
     """
-    Draw bounding box and inference results onto frame, 
-    return annotated frames
+    Draw bounding box and inference results onto frame,
+    return annotated frames. If a Greeting is provided, overlay a banner.
     """
     for face in faces:
         x,y,w,h = face["box"]
@@ -55,7 +55,31 @@ def annotate_frame(frame, faces):
         if emotion:
               cv2.putText(frame, emotion, (x, y + h + 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, WHITE, 2)
 
-        if liveness is False:                                                          
+        if liveness is False:
             cv2.putText(frame, "SPOOF DETECTED", (x, y + h + 44), cv2.FONT_HERSHEY_SIMPLEX, 0.6, RED, 2)
 
+    if greeting is not None:
+        _draw_greeting_banner(frame, greeting)
+
     return frame
+
+
+def _draw_greeting_banner(frame, greeting):
+    """Translucent dark bar across the top with the curated greeting message."""
+    h, w = frame.shape[:2]
+    banner_h = 70
+
+    overlay = frame.copy()
+    cv2.rectangle(overlay, (0, 0), (w, banner_h), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.55, frame, 0.45, 0, frame)
+
+    cv2.putText(
+        frame, greeting.message, (15, 32),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.7, WHITE, 2,
+    )
+
+    sub = f"detected: {greeting.emotion} ({greeting.dominance * 100:.0f}%)"
+    cv2.putText(
+        frame, sub, (15, 58),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1,
+    )

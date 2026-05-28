@@ -1,0 +1,37 @@
+# Curated greeting templates, keyed by the 7 emotion labels plus "unclear"
+# (used when the aggregator's dominance score falls below threshold).
+# {name} is substituted at runtime.
+
+greetings:
+  angry:
+    - "{name}, take a breath. Coffee's on in the kitchen if you need a moment."
+    - "Hey {name} — rough morning? A short walk often helps."
+
+  disgust:
+    - "Welcome, {name}. Hope the day picks up from here."
+    - "{name}, hang in there."
+
+  fear:
+    - "{name}, you've got this. Reach out if anything's weighing on you."
+    - "Welcome back, {name}. One thing at a time today."
+
+  happy:
+    - "Welcome back, {name} — great to see that smile."
+    - "{name}, your energy is contagious. Have a brilliant day."
+    - "Hi {name}! Looks like a good morning."
+
+  neutral:
+    - "Welcome, {name}."
+    - "Good to see you, {name}."
+
+  sad:
+    - "{name}, sending you a quiet good morning. The break room's open if you need it."
+    - "Welcome, {name}. Be gentle with yourself today."
+
+  surprise:
+    - "Hi {name} — looks like something caught your attention!"
+    - "Welcome, {name}. Whatever it is, you've got us."
+
+  unclear:
+    - "Welcome, {name}."
+    - "Good to see you, {name}."
