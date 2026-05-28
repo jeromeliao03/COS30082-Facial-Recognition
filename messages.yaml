@@ -26,6 +26,7 @@ greetings:
 
   sad:
     - "{name}, sending you a quiet good morning. The break room's open if you need it."
+    - "Welcome, {name}. Be gentle with yourself today."
 
   surprise:
     - "Hi {name} - looks like something caught your attention!"
