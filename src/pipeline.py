@@ -13,6 +13,7 @@ from src.detector import detect_faces
 from src.inference import run_inference
 from src.display import annotate_frame
 from src.inference import _liveness_cache
+from src import greeter
 
 
 with open("config.yaml") as f:
@@ -128,7 +129,7 @@ class Pipeline:
                         self._last_results = []
                         _liveness_cache.clear()
 
-                    rendered = annotate_frame(frame, self._last_results)
+                    rendered = annotate_frame(frame, self._last_results, greeter.current_greeting())
                     _, jpeg = cv2.imencode(".jpg", rendered)
 
                     if self._queue.full():

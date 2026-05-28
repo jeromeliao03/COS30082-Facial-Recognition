@@ -9,6 +9,7 @@ import tensorflow as tf
 
 from src.registry import search
 from src import attendance_log
+from src import greeter
 
 with open ("config.yaml", "r") as f:
     config = yaml.safe_load(f)
@@ -83,12 +84,19 @@ def run_inference(crop):
 
     liveness = _liveness_cache[name]
 
+    # liveness = True
+
     # 3. emotion, run if identity is matched
     emotion_prob = _run_emotion(batch).numpy()[0]
     emotion = EMOTION_LABELS[int(np.argmax(emotion_prob))]
 
-    # innovative feature — log attendance 
+    # innovative feature — log attendance
     attendance_log.process(match['name'], liveness, emotion)
+
+    # innovation feature — confidence-weighted emotion aggregation for greeting
+    # Only feed live, recognised faces; spoofs don't earn personalised greetings.
+    if liveness:
+        greeter.observe(name, emotion_prob)
 
     return {
         "identity": match['name'],

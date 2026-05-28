@@ -3,12 +3,39 @@ timestamp,identity,liveness,emotion,action
 2026-05-27 14:25:31,jerome,REAL,neutral,Access granted
 2026-05-27 14:26:12,Unknown,SPOOF,neutral,Spoof detected (1/3)
 2026-05-27 14:26:12,Unknown,SPOOF,neutral,Spoof detected (2/3)
-2026-05-27 14:26:13,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-27 14:26:13,Unknown,SPOOF,neutral,ALERT ï¿½ system locked 60s
 2026-05-27 14:27:45,jerome,REAL,neutral,Access granted
 2026-05-28 13:08:44,Unknown,SPOOF,neutral,Spoof detected (1/3)
 2026-05-28 13:08:44,Unknown,SPOOF,neutral,Spoof detected (2/3)
-2026-05-28 13:08:45,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-28 13:08:45,Unknown,SPOOF,neutral,ALERT ï¿½ system locked 60s
 2026-05-28 13:09:45,Unknown,SPOOF,neutral,Spoof detected (1/3)
 2026-05-28 13:09:46,Unknown,SPOOF,neutral,Spoof detected (2/3)
-2026-05-28 13:09:46,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-28 13:09:46,Unknown,SPOOF,neutral,ALERT ï¿½ system locked 60s
 2026-05-28 13:10:26,jerome,REAL,neutral,Access granted
+2026-05-28 13:27:39,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-28 13:27:40,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-28 13:27:40,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-28 13:38:01,Hasi,REAL,surprise,Access granted
+2026-05-28 13:38:06,aston,REAL,surprise,Access granted
+2026-05-28 13:38:35,jerome,REAL,neutral,Access granted
+2026-05-28 13:41:24,Hasi,REAL,neutral,Access granted
+2026-05-28 13:41:42,aston,REAL,neutral,Access granted
+2026-05-28 13:57:36,Hasi,REAL,surprise,Access granted
+2026-05-28 13:58:48,aston,REAL,neutral,Access granted
+2026-05-28 13:59:21,Hasi,REAL,neutral,Access granted
+2026-05-28 14:01:28,aston,REAL,neutral,Access granted
+2026-05-28 14:01:42,jerome,REAL,neutral,Access granted
+2026-05-28 14:06:52,Unknown,SPOOF,surprise,Spoof detected (1/3)
+2026-05-28 14:06:53,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-28 14:06:54,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-28 14:12:17,Hasi,REAL,neutral,Access granted
+2026-05-28 14:12:18,aston,REAL,neutral,Access granted
+2026-05-28 14:13:59,jerome,REAL,neutral,Access granted
+2026-05-28 14:15:21,jerome,REAL,happy,Access granted
+2026-05-28 14:15:22,Hasi,REAL,neutral,Access granted
+2026-05-28 14:17:46,Hasi,REAL,neutral,Access granted
+2026-05-28 14:17:47,jerome,REAL,surprise,Access granted
+2026-05-28 14:19:32,aston,REAL,neutral,Access granted
+2026-05-28 14:21:50,Hasi,REAL,sad,Access granted
+2026-05-28 14:23:07,Hasi,REAL,neutral,Access granted
+2026-05-28 14:23:35,aston,REAL,neutral,Access granted
