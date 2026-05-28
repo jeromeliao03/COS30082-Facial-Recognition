@@ -5,7 +5,7 @@
 greetings:
   angry:
     - "{name}, take a breath. Coffee's on in the kitchen if you need a moment."
-    - "Hey {name} — rough morning? A short walk often helps."
+    - "Hey {name} - rough morning? A short walk often helps."
 
   disgust:
     - "Welcome, {name}. Hope the day picks up from here."
@@ -16,7 +16,7 @@ greetings:
     - "Welcome back, {name}. One thing at a time today."
 
   happy:
-    - "Welcome back, {name} — great to see that smile."
+    - "Welcome back, {name} - great to see that smile."
     - "{name}, your energy is contagious. Have a brilliant day."
     - "Hi {name}! Looks like a good morning."
 
@@ -26,10 +26,9 @@ greetings:
 
   sad:
     - "{name}, sending you a quiet good morning. The break room's open if you need it."
-    - "Welcome, {name}. Be gentle with yourself today."
 
   surprise:
-    - "Hi {name} — looks like something caught your attention!"
+    - "Hi {name} - looks like something caught your attention!"
     - "Welcome, {name}. Whatever it is, you've got us."
 
   unclear:
