@@ -101,7 +101,7 @@ class Pipeline:
                         annotated_faces = []
                         for face in faces:
                             try:
-                                result = run_inference(face["raw_crop"])
+                                result = run_inference(face["raw_crop"], face["spoof_crop"])
                             except Exception as e:
                                 print(f"inference error: {e}")
                                 continue

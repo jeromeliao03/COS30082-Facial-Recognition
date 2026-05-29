@@ -16,6 +16,7 @@ with open ("config.yaml", "r") as f:
 
 
 THRESHOLD = config["recognition"]["threshold"]
+SPOOF_THRESHOLD = config["recognition"]["spoof_threshold"]
 EMOTION_LABELS = config["emotions"]["labels"]
 
 _active = config["recognition"]["active_model"]
@@ -52,41 +53,34 @@ _run_emotion(_dummy)
 
 _liveness_cache = {}
 
-def run_inference(crop):
+def run_inference(crop, spoof_crop, slot=0):
     """
-    Run inference pipeline on single preprocessed face crop
-    Gating for actual model usage to reduce compute
-    FOR NOW, gated at if identity exists
-
-    TO:DO: Bake further conditionals to discriminate against using all models on all frames, 
-    Example: If a face is determined to not be spoofed, 
-        the track of that face going forward will not need subsequent detections
+    Run inference pipeline on single preprocessed face crop.
     """
     batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
 
-    # 1. Entry is face recognition to establish known identity
+    # 1. face recognition to establish known identity
     embedding = _run_embedding(batch).numpy()[0]
     match = search(embedding)
     
     if match is None:
-        return{"identity": None}
+        return {"identity": None}
     
     name = match["name"]
 
-     # ckecking system lockout status before running models
+    # checking system lockout status before running models
     if attendance_log.is_locked():
         return { "identity": None, "locked": True, "message": "System locked due to multiple spoofing attempts. Please wait." }
 
-    # 2. anti-spoofing, run if identity is matched
+    # 2. anti-spoofing : padded crop, raw /255 preprocessing (NOT mobilenet preprocess)
     if name not in _liveness_cache:
-        spoof_score = _run_spoof(batch).numpy()[0]
-        _liveness_cache[name] = bool(spoof_score[0] > 0.5)
+        spoof_batch = np.expand_dims(spoof_crop / 255.0, axis=0)
+        spoof_score = _run_spoof(spoof_batch).numpy()[0]
+        _liveness_cache[name] = bool(spoof_score[0] >= SPOOF_THRESHOLD)
 
     liveness = _liveness_cache[name]
 
-    # liveness = True
-
-    # 3. emotion, run if identity is matched
+    # 3. emotion
     emotion_prob = _run_emotion(batch).numpy()[0]
     emotion = EMOTION_LABELS[int(np.argmax(emotion_prob))]
 

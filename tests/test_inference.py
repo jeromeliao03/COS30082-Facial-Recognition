@@ -23,13 +23,14 @@ faces = detect_faces(frame)
 assert len(faces) > 0, "No face detected — check test image"
 
 crop = faces[0]["raw_crop"]
+spoof_crop = faces[0]["spoof_crop"]
 batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
 embedding = _embedding_model.predict(batch, verbose=0)[0]
 registry.register("Test Person", embedding)
 
 
 # --- Test 1: known face returns full result ---
-result = run_inference(crop)
+result = run_inference(crop, spoof_crop)
 assert result["identity"] == "Test Person", f"Expected match, got: {result}"
 assert isinstance(result["liveness"], bool), "Liveness should be bool"
 assert result["emotion"] in EMOTION_LABELS, f"Unexpected emotion: {result['emotion']}"
@@ -40,7 +41,7 @@ print(f"full pipeline: PASSED — identity={result['identity']}, liveness={resul
 # --- Test 2: unregistered face returns None ---
 registry.names.clear()
 registry.embeddings.clear()
-result = run_inference(crop)
+result = run_inference(crop, spoof_crop)
 assert result["identity"] is None, "Expected no match on empty registry"
 print("gate logic: PASSED")
 
