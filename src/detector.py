@@ -15,6 +15,7 @@ detector = cv2.FaceDetectorYN.create(
 
 IMG_SIZE = tuple(config["recognition"]["img_size"])
 SPOOF_PAD = 0.4
+MIN_FACE_SIZE = config["detection"]["min_face_size"]
 
 def detect_faces(frame):
     """Detect faces in BGR frame, returns box and crop dicts"""
@@ -30,6 +31,9 @@ def detect_faces(frame):
     for face in faces:
         # take first 4 from box coord, keypoints packed by YuNet
         x,y,fw,fh = [int(v) for v in face[:4]]
+        # skip small detections — usually background false positives
+        if fw < MIN_FACE_SIZE or fh < MIN_FACE_SIZE:
+            continue
         # clamp
         x,y = max(0, x), max(0, y)
         crop = frame[y:y+fh, x:x+fw]

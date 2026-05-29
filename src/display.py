@@ -61,9 +61,6 @@ def annotate_frame(frame, faces, greeting=None):
         if emotion:
               cv2.putText(frame, emotion, (x, y + h + 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, WHITE, 2)
 
-        if liveness is False:
-            cv2.putText(frame, "SPOOF DETECTED", (x, y + h + 44), cv2.FONT_HERSHEY_SIMPLEX, 0.6, RED, 2)
-
     if greeting is not None:
         _draw_greeting_banner(frame, greeting)
 

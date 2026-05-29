@@ -6,6 +6,9 @@ recognition:
   img_size: [128, 128]
   active_model: metric # either "metric" or "classification"
 
+detection:
+  min_face_size: 80 # ignore detections smaller than this (px) — filters background false positives
+
 paths:
   registry: registry.npz
 
