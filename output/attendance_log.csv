@@ -57,3 +57,27 @@ timestamp,identity,liveness,emotion,action
 2026-05-29 20:30:13,Unknown,SPOOF,neutral,Spoof detected (1/3)
 2026-05-29 20:30:20,Unknown,SPOOF,sad,Spoof detected (2/3)
 2026-05-29 20:30:31,aston,REAL,angry,Access granted
+2026-05-29 23:29:24,aston,REAL,neutral,Access granted
+2026-05-29 23:29:43,jerome,REAL,neutral,Access granted
+2026-05-29 23:40:13,jerome,REAL,neutral,Access granted
+2026-05-29 23:45:53,jerome,REAL,neutral,Access granted
+2026-05-29 23:52:38,jerome,REAL,neutral,Access granted
+2026-05-29 23:56:54,jerome,REAL,neutral,Access granted
+2026-05-29 23:59:16,jerome,REAL,sad,Access granted
+2026-05-29 23:59:48,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-29 23:59:49,Unknown,SPOOF,sad,Spoof detected (2/3)
+2026-05-29 23:59:50,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-30 00:00:51,jerome,REAL,neutral,Access granted
+2026-05-30 00:02:36,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-30 00:03:55,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-30 00:03:56,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-30 00:03:57,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-30 00:04:57,jerome,REAL,angry,Access granted
+2026-05-30 00:07:44,jerome,REAL,neutral,Access granted
+2026-05-30 00:11:54,jerome,REAL,angry,Access granted
+2026-05-30 00:13:41,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-30 00:13:42,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-30 00:13:42,Unknown,SPOOF,sad,ALERT — system locked 60s
+2026-05-30 00:15:41,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-30 00:16:09,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-30 00:16:22,Unknown,SPOOF,neutral,ALERT — system locked 60s
