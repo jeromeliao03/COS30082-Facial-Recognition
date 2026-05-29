@@ -26,3 +26,8 @@ greeting:
   cooldown_seconds: 60.0     # seconds in COOLDOWN state before identity is re-greetable
   stale_after: 4.0           # seconds without observations during COLLECTING -> reset buffer
   messages_path: messages.yaml
+
+tracker:
+  window_frames: 15 # frames of positive name votes needed to confirm
+  min_ratio: 0.7 # fraction of votes that must agree on the same name
+  stale_after: 2.0 # sec before slot resets and face disappears
