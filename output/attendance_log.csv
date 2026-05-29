@@ -40,3 +40,17 @@ timestamp,identity,liveness,emotion,action
 2026-05-28 14:23:07,Hasi,REAL,neutral,Access granted
 2026-05-28 14:23:35,aston,REAL,neutral,Access granted
 2026-05-29 17:54:57,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-29 18:46:21,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-29 18:48:36,jerome,REAL,neutral,Access granted
+2026-05-29 18:49:13,aston,REAL,neutral,Access granted
+2026-05-29 20:07:10,aston,REAL,neutral,Access granted
+2026-05-29 20:08:20,aston,REAL,neutral,Access granted
+2026-05-29 20:09:24,Unknown,SPOOF,happy,Spoof detected (1/3)
+2026-05-29 20:09:34,aston,REAL,neutral,Access granted
+2026-05-29 20:10:25,aston,REAL,sad,Access granted
+2026-05-29 20:11:06,aston,REAL,sad,Access granted
+2026-05-29 20:12:21,aston,REAL,neutral,Access granted
+2026-05-29 20:13:59,Unknown,SPOOF,happy,Spoof detected (1/3)
+2026-05-29 20:14:08,aston,REAL,neutral,Access granted
+2026-05-29 20:15:57,Unknown,SPOOF,angry,Spoof detected (1/3)
+2026-05-29 20:16:32,aston,REAL,neutral,Access granted
