@@ -9,6 +9,10 @@ recognition:
 paths:
   registry: registry.npz
 
+registration:
+  enrolment_sample: 10 # face samples to capture per enrolment
+  enrolment_interval: 0.3 # seconds between samples
+
 models:
   yunet: models/yunet.onnx
   face_recognition_metric: models/metric_best.keras
