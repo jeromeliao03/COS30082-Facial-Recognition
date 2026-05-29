@@ -1,16 +1,16 @@
-camera_index: 4 # Change to whatever index you use
+camera_index: 0 # Change to whatever index you use
 
 recognition:
   threshold: 0.6516 # Base EER threshold
   spoof_threshold: 0.5 # 1:live, 0:spoof
   img_size: [128, 128]
-  active_model: metric  # either "metric" or "classification"
+  active_model: metric # either "metric" or "classification"
 
 paths:
   registry: registry.npz
 
 registration:
-  enrolment_sample: 10 # face samples to capture per enrolment
+  enrolment_samples: 10 # face samples to capture per enrolment
   enrolment_interval: 0.3 # seconds between samples
 
 models:
@@ -24,11 +24,11 @@ emotions:
   labels: [angry, disgust, fear, happy, neutral, sad, surprise]
 
 greeting:
-  window_frames: 30          # frames of probability vectors to accumulate per session
-  dominance_threshold: 0.35  # below this normalised share, fall back to "unclear"
-  display_duration: 5.0      # seconds the greeting banner stays on screen
-  cooldown_seconds: 60.0     # seconds in COOLDOWN state before identity is re-greetable
-  stale_after: 4.0           # seconds without observations during COLLECTING -> reset buffer
+  window_frames: 30 # frames of probability vectors to accumulate per session
+  dominance_threshold: 0.35 # below this normalised share, fall back to "unclear"
+  display_duration: 5.0 # seconds the greeting banner stays on screen
+  cooldown_seconds: 60.0 # seconds in COOLDOWN state before identity is re-greetable
+  stale_after: 4.0 # seconds without observations during COLLECTING -> reset buffer
   messages_path: messages.yaml
 
 tracker:
