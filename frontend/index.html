@@ -57,6 +57,42 @@
                 </div>
             </div>
 
+            <!-- Spoof Explainability panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Spoof Explainability</h2>
+                    <span class="panel-pill">Grad-CAM</span>
+                </div>
+
+                <button id="explainSpoofBtn" class="btn btn-primary">
+                    Generate spoof heatmap
+                </button>
+
+                <p class="hint">
+                    Uses the spoof model to visualise which face regions influenced the REAL/SPOOF decision.
+                </p>
+
+                <div class="info-row">
+                    <span class="info-label">Prediction</span>
+                    <span class="info-value" id="spoofPrediction">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Spoof score</span>
+                    <span class="info-value" id="spoofScore">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Confidence</span>
+                    <span class="info-value" id="spoofConfidence">—</span>
+                </div>
+
+                <img
+                    id="spoofHeatmapImage"
+                    src=""
+                    alt="Spoof Grad-CAM heatmap"
+                    style="width: 100%; display: none; margin-top: 12px; border-radius: 12px;"
+                />
+            </div>
+
             <!-- Registration panel -->
             <div class="panel">
                 <div class="panel-header">
