@@ -8,6 +8,7 @@ sys.path.insert(0,
 os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import src.registry as registry
+import src.tracker as tracker
 from src.detector import detect_faces
 from src.inference import run_inference, _embedding_model, _preprocess
 
@@ -23,13 +24,17 @@ faces = detect_faces(frame)
 assert len(faces) > 0, "No face detected — check test image"
 
 crop = faces[0]["raw_crop"]
+spoof_crop = faces[0]["spoof_crop"]
 batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
 embedding = _embedding_model.predict(batch, verbose=0)[0]
 registry.register("Test Person", embedding)
 
 
 # --- Test 1: known face returns full result ---
-result = run_inference(crop)
+tracker.clear_all()
+result = None
+for _ in range(tracker.WINDOW):
+    result = run_inference(crop, spoof_crop, slot=0)
 assert result["identity"] == "Test Person", f"Expected match, got: {result}"
 assert isinstance(result["liveness"], bool), "Liveness should be bool"
 assert result["emotion"] in EMOTION_LABELS, f"Unexpected emotion: {result['emotion']}"
@@ -38,9 +43,10 @@ print(f"full pipeline: PASSED — identity={result['identity']}, liveness={resul
 
 
 # --- Test 2: unregistered face returns None ---
+tracker.clear_all()
 registry.names.clear()
 registry.embeddings.clear()
-result = run_inference(crop)
+result = run_inference(crop, spoof_crop, slot=0)
 assert result["identity"] is None, "Expected no match on empty registry"
 print("gate logic: PASSED")
 

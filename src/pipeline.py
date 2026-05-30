@@ -12,8 +12,9 @@ import yaml
 from src.detector import detect_faces
 from src.inference import run_inference
 from src.display import annotate_frame
-from src.inference import _liveness_cache
+from src.inference import _liveness_cache, _attendance_fired
 from src import greeter
+from src import tracker
 
 
 with open("config.yaml") as f:
@@ -76,11 +77,16 @@ class Pipeline:
         elif first.get("liveness") is False:
             liveness_str = "Spoof"
 
+        tracking = first.get("tracking")
+        progress = list(first["progress"]) if "progress" in first else None
+
         return {
             "face_detected": True,
             "name": first.get("identity") or "Unknown",
             "emotion": first.get("emotion"),
             "liveness": liveness_str,
+            "tracking": tracking,
+            "progress": progress,
         }
 
     def _run(self):
@@ -99,9 +105,9 @@ class Pipeline:
                     # Run inference every 3rd frame, reuse cached results in between
                     if faces and self._frame_count % 3 == 0:
                         annotated_faces = []
-                        for face in faces:
+                        for i, face in enumerate(faces):
                             try:
-                                result = run_inference(face["raw_crop"])
+                                result = run_inference(face["raw_crop"], face["spoof_crop"], slot=i)
                             except Exception as e:
                                 print(f"inference error: {e}")
                                 continue
@@ -125,9 +131,11 @@ class Pipeline:
                         ]
 
                     else:
-                        # No faces detected — clear cached results
+                        # No faces detected — reset appearance state
+                        # liveness_cache intentionally NOT cleared: a confirmed-live result is sticky so brief head turns don't re-run the spoof check
                         self._last_results = []
-                        _liveness_cache.clear()
+                        _attendance_fired.clear()
+                        tracker.clear_all()
 
                     rendered = annotate_frame(frame, self._last_results, greeter.current_greeting())
                     _, jpeg = cv2.imencode(".jpg", rendered)

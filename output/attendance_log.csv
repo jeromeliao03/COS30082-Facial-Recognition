@@ -39,9 +39,45 @@ timestamp,identity,liveness,emotion,action
 2026-05-28 14:21:50,Hasi,REAL,sad,Access granted
 2026-05-28 14:23:07,Hasi,REAL,neutral,Access granted
 2026-05-28 14:23:35,aston,REAL,neutral,Access granted
-2026-05-30 00:25:05,Unknown,SPOOF,angry,Spoof detected (1/3)
-2026-05-30 00:25:07,Unknown,SPOOF,sad,Spoof detected (2/3)
-2026-05-30 00:25:47,Hasi,REAL,neutral,Access granted
-2026-05-30 00:25:50,Unknown,SPOOF,neutral,Spoof detected (1/3)
-2026-05-30 00:25:55,Unknown,SPOOF,angry,Spoof detected (2/3)
-2026-05-30 00:25:56,Unknown,SPOOF,angry,ALERT â€” system locked 60s
+2026-05-29 17:54:57,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-29 18:46:21,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-29 18:48:36,jerome,REAL,neutral,Access granted
+2026-05-29 18:49:13,aston,REAL,neutral,Access granted
+2026-05-29 20:07:10,aston,REAL,neutral,Access granted
+2026-05-29 20:08:20,aston,REAL,neutral,Access granted
+2026-05-29 20:09:24,Unknown,SPOOF,happy,Spoof detected (1/3)
+2026-05-29 20:09:34,aston,REAL,neutral,Access granted
+2026-05-29 20:10:25,aston,REAL,sad,Access granted
+2026-05-29 20:11:06,aston,REAL,sad,Access granted
+2026-05-29 20:12:21,aston,REAL,neutral,Access granted
+2026-05-29 20:13:59,Unknown,SPOOF,happy,Spoof detected (1/3)
+2026-05-29 20:14:08,aston,REAL,neutral,Access granted
+2026-05-29 20:15:57,Unknown,SPOOF,angry,Spoof detected (1/3)
+2026-05-29 20:16:32,aston,REAL,neutral,Access granted
+2026-05-29 20:30:13,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-29 20:30:20,Unknown,SPOOF,sad,Spoof detected (2/3)
+2026-05-29 20:30:31,aston,REAL,angry,Access granted
+2026-05-29 23:29:24,aston,REAL,neutral,Access granted
+2026-05-29 23:29:43,jerome,REAL,neutral,Access granted
+2026-05-29 23:40:13,jerome,REAL,neutral,Access granted
+2026-05-29 23:45:53,jerome,REAL,neutral,Access granted
+2026-05-29 23:52:38,jerome,REAL,neutral,Access granted
+2026-05-29 23:56:54,jerome,REAL,neutral,Access granted
+2026-05-29 23:59:16,jerome,REAL,sad,Access granted
+2026-05-29 23:59:48,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-29 23:59:49,Unknown,SPOOF,sad,Spoof detected (2/3)
+2026-05-29 23:59:50,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-30 00:00:51,jerome,REAL,neutral,Access granted
+2026-05-30 00:02:36,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-30 00:03:55,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-30 00:03:56,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-30 00:03:57,Unknown,SPOOF,neutral,ALERT — system locked 60s
+2026-05-30 00:04:57,jerome,REAL,angry,Access granted
+2026-05-30 00:07:44,jerome,REAL,neutral,Access granted
+2026-05-30 00:11:54,jerome,REAL,angry,Access granted
+2026-05-30 00:13:41,Unknown,SPOOF,sad,Spoof detected (1/3)
+2026-05-30 00:13:42,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-30 00:13:42,Unknown,SPOOF,sad,ALERT — system locked 60s
+2026-05-30 00:15:41,Unknown,SPOOF,neutral,Spoof detected (1/3)
+2026-05-30 00:16:09,Unknown,SPOOF,neutral,Spoof detected (2/3)
+2026-05-30 00:16:22,Unknown,SPOOF,neutral,ALERT — system locked 60s

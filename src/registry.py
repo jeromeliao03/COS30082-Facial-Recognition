@@ -42,6 +42,15 @@ def register(name, embedding):
         embeddings.append(embedding)
     save()
 
+def register_multi(name, embedding_list):
+    """
+    Register identity from multiple aggregated samples by storing mean
+    Averaging across the collected frames denoises the template while staying at the same distance scale
+
+    """
+    mean = np.stack(embedding_list).mean(axis=0)
+    register(name, mean)
+
 def search(embedding):
     """
     Return closest matching embeddings pair as:

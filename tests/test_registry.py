@@ -24,6 +24,28 @@ def test_no_match():
     assert result is None
     print("no match beyond threshold: PASSED")
 
+def test_register_multi():
+    # Small base vector (model emits non-unit-norm embeddings) + per-sample noise
+    base = np.random.rand(128) * 0.2
+    samples = [base + np.random.normal(0, 0.01, 128) for _ in range(10)]
+    registry.register_multi("Steve", samples)
+
+    # Stored template is the raw mean, in the same scale as the samples
+    mean = np.stack(samples).mean(axis=0)
+    result = registry.search(mean)
+    assert result is not None
+    assert result["name"] == "Steve"
+
+    # A single noisy sample should still match the averaged template
+    result = registry.search(samples[0])
+    assert result is not None
+    assert result["name"] == "Steve"
+
+    index = registry.names.index("Steve")
+    assert np.allclose(registry.embeddings[index], mean)
+
+    registry.delete("Steve")
+    print("register_multi (raw averaged template): PASSED")
 
 def test_delete():
     registry.delete("Steve")
@@ -32,7 +54,7 @@ def test_delete():
     assert not os.path.exists(registry.REGISTRY_PATH)
     print("delete: PASSED")
 
-
 test_register_and_search()
 test_no_match()
+test_register_multi()
 test_delete()

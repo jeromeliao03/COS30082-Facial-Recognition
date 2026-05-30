@@ -10,12 +10,14 @@ import tensorflow as tf
 from src.registry import search
 from src import attendance_log
 from src import greeter
+from src import tracker
 
 with open ("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 
 THRESHOLD = config["recognition"]["threshold"]
+SPOOF_THRESHOLD = config["recognition"]["spoof_threshold"]
 EMOTION_LABELS = config["emotions"]["labels"]
 
 _active = config["recognition"]["active_model"]
@@ -51,47 +53,62 @@ _run_spoof(_dummy)
 _run_emotion(_dummy)
 
 _liveness_cache = {}
+_attendance_fired = set()
 
-def run_inference(crop):
+def run_inference(crop, spoof_crop, slot=0):
     """
-    Run inference pipeline on single preprocessed face crop
-    Gating for actual model usage to reduce compute
-    FOR NOW, gated at if identity exists
-
-    TO:DO: Bake further conditionals to discriminate against using all models on all frames, 
-    Example: If a face is determined to not be spoofed, 
-        the track of that face going forward will not need subsequent detections
+    Run inference pipeline on single preprocessed face crop, gated by temporal aggregate
     """
     batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
 
-    # 1. Entry is face recognition to establish known identity
+    # 1. face recognition, runs every inference frame to cast a tracker vote
     embedding = _run_embedding(batch).numpy()[0]
     match = search(embedding)
     
     if match is None:
-        return{"identity": None}
+        return {"identity": None}
     
     name = match["name"]
 
-     # ckecking system lockout status before running models
+    # accumulate votes and check confirmation window before running any other model
+    tracker.observe(slot, name)
+    tracking = tracker.query(slot)
+
+    if tracking["state"] != "confirmed":
+        return {
+            "identity": name,
+            "tracking": "collecting",
+            "progress": tracking["progress"],
+        }
+
+    # use the tracker's consensus name, not the current frame's recognition result 4 display
+    name = tracking["name"]
+
+    # 2. lockout check — only matters once identity is confirmed
     if attendance_log.is_locked():
-        return { "identity": None, "locked": True, "message": "System locked due to multiple spoofing attempts. Please wait." }
+        return {"identity": None, "locked": True, "message": "System locked due to multiple spoofing attempts. Please wait."}
 
-    # 2. anti-spoofing, run if identity is matched
-    if name not in _liveness_cache:
-        spoof_score = _run_spoof(batch).numpy()[0]
-        _liveness_cache[name] = bool(spoof_score[0] > 0.5)
+    # 3. anti-spoofing — runs once per appearance (before attendance fires)
+    # True is cached permanently, False is never cached so a bad-angle check can be retried
+    # Force 15 good frames
+    if name not in _liveness_cache and name not in _attendance_fired:
+        spoof_batch = np.expand_dims(spoof_crop / 255.0, axis=0)
+        spoof_score = _run_spoof(spoof_batch).numpy()[0]
+        liveness = bool(spoof_score[0] >= SPOOF_THRESHOLD)
+        print(f"[slot {slot}] CONFIRMED {name} | spoof_score={spoof_score[0]:.4f} liveness={liveness}")
+        if liveness:
+            _liveness_cache[name] = True
 
-    liveness = _liveness_cache[name]
+    liveness = _liveness_cache.get(name, False)
 
-    # liveness = True
-
-    # 3. emotion, run if identity is matched
+    # 4. emotion
     emotion_prob = _run_emotion(batch).numpy()[0]
     emotion = EMOTION_LABELS[int(np.argmax(emotion_prob))]
-
     # innovative feature — log attendance
-    attendance_log.process(match['name'], liveness, emotion)
+    # attendance fires once per confirmed name per appearance
+    if name not in _attendance_fired:
+        attendance_log.process(name, liveness, emotion)
+        _attendance_fired.add(name)
 
     # innovation feature — confidence-weighted emotion aggregation for greeting
     # Only feed live, recognised faces; spoofs don't earn personalised greetings.
@@ -99,9 +116,8 @@ def run_inference(crop):
         greeter.observe(name, emotion_prob)
 
     return {
-        "identity": match['name'],
+        "identity": name,
         "distance": float(match['distance']),
         "liveness": liveness,
         "emotion": emotion,
     }
-

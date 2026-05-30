@@ -7,7 +7,7 @@ MAX_SPOOF_ATTEMPTS = 3
 LOCKOUT_DURATION = 60
 
 #State
-_consecutive_spoof = 0
+_consecutive_spoofs = 0
 _lockout_until = None
 _logged_today = set() # Track identities logged today to prevent duplicates
 
@@ -41,12 +41,7 @@ def already_logged(identity):
 
 
 def process(identity, liveness, emotion):
-    """
-    Call after every inference result.
-    - Spoof attempts are ALWAYS logged
-    - Real face attendance is only logged ONCE per session per person
-    """
-    global _consecutive_spoof, _lockout_until, _logged_today
+    global _consecutive_spoofs, _lockout_until, _logged_today
 
     locked = is_locked()
 
@@ -54,22 +49,21 @@ def process(identity, liveness, emotion):
         action = "System locked"
 
     elif not liveness:
-        # always log spoof attempts
-        _consecutive_spoof += 1
-        if _consecutive_spoof >= MAX_SPOOF_ATTEMPTS:
+        # spoof — always increment, never reset by real faces
+        _consecutive_spoofs += 1
+        if _consecutive_spoofs >= MAX_SPOOF_ATTEMPTS:
             _lockout_until      = datetime.now() + timedelta(seconds=LOCKOUT_DURATION)
             action              = f"ALERT — system locked {LOCKOUT_DURATION}s"
-            _consecutive_spoof = 0
+            _consecutive_spoofs = 0
         else:
-            action = f"Spoof detected ({_consecutive_spoof}/{MAX_SPOOF_ATTEMPTS})"
+            action = f"Spoof detected ({_consecutive_spoofs}/{MAX_SPOOF_ATTEMPTS})"
 
     elif identity and identity in _logged_today:
-        # real face but already logged — skip
         return "Already logged"
 
     else:
-        # real face, not yet logged
-        _consecutive_spoof = 0
+        # real face — only reset counter if NO spoof was detected this frame
+        # counter reset is handled separately, not here
         action = "Access granted"
         if identity:
             _logged_today.add(identity)
@@ -83,4 +77,5 @@ def process(identity, liveness, emotion):
             emotion or '-',
             action
         ])
+
     return action

@@ -9,6 +9,7 @@ from src import attendance_log
 GREEN = (0, 200, 0)
 RED = (0,0,220)
 YELLOW = (0, 200, 220)
+ORANGE = (0, 140, 255)
 WHITE = (255, 255, 255)
 
 
@@ -23,13 +24,16 @@ def annotate_frame(frame, faces, greeting=None):
 
         identity = result.get("identity")
         liveness = result.get("liveness")
-        emotion = result.get ("emotion")
+        emotion = result.get("emotion")
+        collecting = result.get("tracking") == "collecting"
 
         #checking is system locked
         locked = result.get("locked", False)
 
         if locked:
             colour = (0,0,200)
+        elif collecting:
+            colour = ORANGE
         elif identity is None:
             colour = YELLOW
         elif liveness:
@@ -43,6 +47,8 @@ def annotate_frame(frame, faces, greeting=None):
             # get remaining lockout time from attendance_log
             remaining = attendance_log.get_remaining_seconds()
             label = f"SYSTEM LOCKED {remaining}s"
+        elif collecting:
+            label = "Recognising..."
         elif liveness is False:
             label = "SPOOF DETECTED"
         elif identity:
@@ -54,9 +60,6 @@ def annotate_frame(frame, faces, greeting=None):
 
         if emotion:
               cv2.putText(frame, emotion, (x, y + h + 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, WHITE, 2)
-
-        if liveness is False:
-            cv2.putText(frame, "SPOOF DETECTED", (x, y + h + 44), cv2.FONT_HERSHEY_SIMPLEX, 0.6, RED, 2)
 
     if greeting is not None:
         _draw_greeting_banner(frame, greeting)
