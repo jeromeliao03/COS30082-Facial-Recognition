@@ -82,40 +82,20 @@ def register_face(req: RegisterRequest):
     if not req.name.strip():
         raise HTTPException(status_code=422, detail="Name cannot be empty")
 
-<<<<<<< HEAD
-    crop = None
-
-    for _ in range(20):
-        crop = pipeline.get_crop()
-
-        if crop is not None:
-            break
-
-        time.sleep(0.1)
-
-    if crop is None:
-        raise HTTPException(
-            status_code=400,
-            detail="No face detected — look at the camera"
-        )
-
-    batch = np.expand_dims(_preprocess(crop.astype("float32")), axis=0)
-    embedding = _run_embedding(tf.constant(batch)).numpy()[0]
-
-    registry.register(req.name.strip(), embedding)
-
-    return {"registered": req.name.strip()}
-=======
     samples = config["registration"]["enrolment_samples"]
     interval = config["registration"]["enrolment_interval"]
 
     collected = []
+
     for _ in range(samples):
         crop = None
+
         for _ in range(20):
             crop = pipeline.get_crop()
+
             if crop is not None:
                 break
+
             time.sleep(0.05)
 
         if crop is not None:
@@ -126,11 +106,17 @@ def register_face(req: RegisterRequest):
         time.sleep(interval)
 
     if not collected:
-        raise HTTPException(status_code=400, detail="No face detected — look at the camera")
+        raise HTTPException(
+            status_code=400,
+            detail="No face detected — look at the camera"
+        )
 
     registry.register_multi(req.name.strip(), collected)
-    return {"registered": req.name.strip(), "samples": len(collected)}
->>>>>>> 66e462d9e247f6b937f642ea209f707504fc722c
+
+    return {
+        "registered": req.name.strip(),
+        "samples": len(collected)
+    }
 
 
 @app.get("/identities")
