@@ -20,7 +20,6 @@ const infoTime = $('infoTime');
 const dotCam = $('dotCam');
 const dotFace = $('dotFace');
 const dotBackend = $('dotBackend');
-const fpsValue = $('fpsValue');
 const clockEl = $('clock');
 const apiBaseEl = $('apiBase');
 
@@ -183,6 +182,10 @@ videoEl.addEventListener('error', () => {
 });
 
 // ---- Status polling ----
+// Tracks the current primary identity so 'Detected at' updates once when the
+// identity changes, instead of refreshing every poll (which is meaningless).
+let currentIdentity = null;
+
 async function pollStatus() {
     try {
         const s = await fetchJson('/status');
@@ -190,22 +193,26 @@ async function pollStatus() {
         dotFace.className = 'dot ' + (s.face_detected ? 'dot-green' : 'dot-grey');
 
         if (s.face_detected) {
-            infoName.textContent = s.name || 'Unknown';
+            const name = s.name || 'Unknown';
+            infoName.textContent = name;
             infoEmotion.textContent = s.emotion || '—';
             infoLiveness.textContent = s.liveness || '—';
-            infoTime.textContent = new Date().toLocaleTimeString();
+
+            // Only stamp the time when the identity actually changes
+            if (name !== currentIdentity) {
+                currentIdentity = name;
+                infoTime.textContent = new Date().toLocaleTimeString();
+            }
         } else {
             infoName.textContent = '—';
             infoEmotion.textContent = '—';
             infoLiveness.textContent = '—';
-        }
-
-        if (typeof s.fps === 'number') {
-            fpsValue.textContent = s.fps.toFixed(1);
+            infoTime.textContent = '—';
+            currentIdentity = null;
         }
 
     } catch {
-        fpsValue.textContent = '—';
+        // /status unavailable — leave panel as-is until next poll
     }
 }
 
