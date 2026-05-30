@@ -36,7 +36,7 @@
             <!-- Information panel -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2>Information</h2>
+                    <h2>Primary Face</h2>
                     <span class="panel-pill" id="statusPill">Active</span>
                 </div>
                 <div class="info-row">
@@ -52,9 +52,12 @@
                     <span class="info-value" id="infoLiveness">—</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Last seen</span>
+                    <span class="info-label">Detected at</span>
                     <span class="info-value" id="infoTime">—</span>
                 </div>
+                <p class="panel-hint">
+                    All faces are tracked and labelled on the video feed. This panel summarises the primary face.
+                </p>
             </div>
 
             <!-- Spoof Explainability panel -->
@@ -128,9 +131,6 @@
         <span class="status-item">
             <span class="dot dot-grey" id="dotBackend"></span> Backend
         </span>
-        <span class="status-item">
-            FPS: <span id="fpsValue">—</span>
-        </span>
         <span class="status-item right">
             API: <span id="apiBase">—</span>
         </span>
@@ -141,5 +141,6 @@
 
     <script src="config.js"></script>
     <script src="app.js"></script>
+    <script src="liveness-challenge.js"></script>
 </body>
 </html>
