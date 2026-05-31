@@ -19,8 +19,9 @@ import tensorflow as tf
 
 import src.registry as registry
 from src.pipeline import Pipeline
-from src.inference import _preprocess, _run_embedding
+from src.inference import _preprocess, _run_embedding, evict
 from src.spoof_explainability import SpoofExplainability
+from src import tracker
 
 
 with open("config.yaml") as f:
@@ -113,6 +114,10 @@ def register_face(req: RegisterRequest):
 
     registry.register_multi(req.name.strip(), collected)
 
+    # Evict cached inference state and reset tracker so the next frame starts
+    # a fresh lookup with clean spoof/attendance state
+    evict(req.name.strip())
+
     return {
         "registered": req.name.strip(),
         "samples": len(collected)
@@ -131,6 +136,7 @@ def delete_identity(name: str):
     if not registry.delete(name):
         raise HTTPException(status_code=404, detail=f"'{name}' not found")
 
+    evict(name)
     return {"deleted": name}
 
 

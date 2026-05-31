@@ -11,9 +11,11 @@ with open("config.yaml") as f:
 
 WINDOW = _cfg["window_frames"]
 MIN_RATIO = _cfg["min_ratio"]
+UNKNOWN_RATIO = _cfg["unknown_ratio"]
 STALE_AFTER = _cfg["stale_after"]
 
 # slot index -> {"votes": [], "confirmed": bool, "top_name": str|None, "last_seen": float}
+# confirmed with top_name=None means "confirmed unknown" — stop collecting
 _slots = {}
 
 
@@ -43,15 +45,30 @@ def query(slot):
         return {"state": None, "name": None, "progress": (0, WINDOW)}
 
     if buf["confirmed"]:
+        # top_name=None means confirmed unknown — surface as state="unknown"
+        if buf["top_name"] is None:
+            return {"state": "unknown", "name": None, "progress": (WINDOW, WINDOW)}
         return {"state": "confirmed", "name": buf["top_name"], "progress": (WINDOW, WINDOW)}
 
     votes = buf["votes"]
     if not votes:
         return {"state": None, "name": None, "progress": (0, WINDOW)}
 
-    top = max(set(votes), key=votes.count)
+    none_count = votes.count(None)
 
-    if len(votes) >= WINDOW and votes.count(top) / WINDOW >= MIN_RATIO:
+    # Confirm unknown: once enough of the window is None, stop trying
+    if none_count / WINDOW >= UNKNOWN_RATIO:
+        buf["confirmed"] = True
+        buf["top_name"] = None
+        return {"state": "unknown", "name": None, "progress": (WINDOW, WINDOW)}
+
+    named_votes = [v for v in votes if v is not None]
+    if not named_votes:
+        return {"state": "collecting", "name": None, "progress": (len(votes), WINDOW)}
+
+    top = max(set(named_votes), key=named_votes.count)
+
+    if len(votes) >= WINDOW and named_votes.count(top) / WINDOW >= MIN_RATIO:
         buf["confirmed"] = True
         buf["top_name"] = top
         return {"state": "confirmed", "name": top, "progress": (WINDOW, WINDOW)}
