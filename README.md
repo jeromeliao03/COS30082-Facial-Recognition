@@ -1,7 +1,4 @@
 # COS30082-Facial-Recognition
-<<<<<<< HEAD
-Group project
-=======
 
 ## Requirements
 1. git lfs
@@ -16,4 +13,3 @@ Group project
 and then navigate to
 
 http://localhost:8000/
->>>>>>> main

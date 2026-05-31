@@ -1,6 +1,7 @@
 import sys
 import os
 import csv
+import cv2
 import time
 from datetime import datetime
 
@@ -12,10 +13,10 @@ sys.path.insert(0, PROJECT_ROOT)
 from logger import EmotionLogger
 from emotion.src.predict import EmotionPredictor
 
-# -----------------------------
-# INIT LOGGER
-# -----------------------------
-logger = EmotionLogger("emotion_log.csv")
+
+from logger import EmotionLogger
+
+logger = EmotionLogger()
 
 # -----------------------------
 # INIT MODEL (IMPORTANT)
@@ -24,7 +25,7 @@ predictor = EmotionPredictor(
     weights_path="emotion/models/mobilenetv2_best.keras",
     input_is_bgr=True
 )
-import cv2
+
 
 cap = cv2.VideoCapture(0)
 

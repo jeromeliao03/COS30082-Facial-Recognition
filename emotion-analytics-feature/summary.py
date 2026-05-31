@@ -1,13 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from config import LOG_PATH
 
-def generate_report(file_path="emotion_log.csv"):
-    df = pd.read_csv(file_path, header=None)
-
+def generate_report():
+    df = pd.read_csv(LOG_PATH, header=None)
     df.columns = ["time", "emotion"]
 
     print(df.head())
-    print("Columns:", df.columns)
 
     counts = df["emotion"].value_counts()
 
