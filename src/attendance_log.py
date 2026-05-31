@@ -40,6 +40,11 @@ def already_logged(identity):
     return identity in _logged_today
 
 
+def evict(identity):
+    """Remove identity from today's log set (call when identity is deleted)."""
+    _logged_today.discard(identity)
+
+
 def process(identity, liveness, emotion):
     global _consecutive_spoofs, _lockout_until, _logged_today
 

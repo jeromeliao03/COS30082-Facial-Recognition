@@ -1,7 +1,7 @@
 camera_index: 0 # Change to whatever index you use
 
 recognition:
-  threshold: 0.6516 # Base EER threshold
+  threshold: 0.4 # Base EER threshold
   spoof_threshold: 0.5 # 1:live, 0:spoof
   img_size: [128, 128]
   active_model: metric # either "metric" or "classification"
@@ -37,4 +37,5 @@ greeting:
 tracker:
   window_frames: 15 # frames of positive name votes needed to confirm
   min_ratio: 0.7 # fraction of votes that must agree on the same name
+  unknown_ratio: 0.5 # fraction of None votes in the window that confirms unknown
   stale_after: 2.0 # sec before slot resets and face disappears

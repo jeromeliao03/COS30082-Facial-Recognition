@@ -55,6 +55,14 @@ _run_emotion(_dummy)
 _liveness_cache = {}
 _attendance_fired = set()
 
+
+def evict(name):
+    """Remove all cached state for a deleted identity."""
+    _liveness_cache.pop(name, None)
+    _attendance_fired.discard(name)
+    attendance_log.evict(name)
+    tracker.clear_all()
+
 def run_inference(crop, spoof_crop, slot=0):
     """
     Run inference pipeline on single preprocessed face crop, gated by temporal aggregate
@@ -64,17 +72,19 @@ def run_inference(crop, spoof_crop, slot=0):
     # 1. face recognition, runs every inference frame to cast a tracker vote
     embedding = _run_embedding(batch).numpy()[0]
     match = search(embedding)
-    
-    if match is None:
-        return {"identity": None}
-    
-    name = match["name"]
 
-    # accumulate votes and check confirmation window before running any other model
+    name = match["name"] if match is not None else None
+
+    # accumulate votes (including None for no-match) so the window stays full
+    # and sporadic matches on an unregistered face can't reach confirmation
     tracker.observe(slot, name)
     tracking = tracker.query(slot)
 
-    if tracking["state"] != "confirmed":
+    # Confirmed unknown — stop processing, do not attempt identity pipeline
+    if tracking["state"] == "unknown":
+        return {"identity": None}
+
+    if match is None or tracking["state"] != "confirmed":
         return {
             "identity": name,
             "tracking": "collecting",
